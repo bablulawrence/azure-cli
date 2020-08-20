@@ -137,11 +137,12 @@ def upgrade_version(cmd, update_all=None, yes=None):  # pylint: disable=too-many
         logger.warning("Please rerun 'az upgrade' to update all extensions.")
     else:
         for ext_name in exts:
-            logger.warning("Checking update for %s", ext_name)
-            exit_code = subprocess.call(['az', 'extension', 'update', '-n', ext_name],
-                                        shell=platform.system() == 'Windows')
-            if exit_code:
-                msg = "Extension {} update failed during az upgrade. Exit code {}.".format(ext_name, exit_code)
+            try:
+                logger.warning("Checking update for %s", ext_name)
+                subprocess.call(['az', 'extension', 'update', '-n', ext_name],
+                                shell=platform.system() == 'Windows')
+            except Exception as ex:  # pylint: disable=broad-except
+                msg = "Extension {} update failed during az upgrade. {}".format(ext_name, str(ex))
                 raise CLIError(msg)
 
     logger.warning("Upgrade finished.")
