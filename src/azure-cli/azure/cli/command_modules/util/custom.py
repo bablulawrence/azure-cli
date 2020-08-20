@@ -57,6 +57,8 @@ def upgrade_version(cmd, update_all=None, yes=None):  # pylint: disable=too-many
     exts = [ext.name for ext in get_extensions(ext_type=WheelExtension)] if update_all else []
 
     exit_code = 0
+    installer = os.getenv(_ENV_AZ_INSTALLER) or ''
+    installer = installer.upper()
     if update_cli:
         latest_version_msg = 'It will be updated to {}.'.format(latest_version) if yes \
             else 'Latest version available is {}.'.format(latest_version)
@@ -68,7 +70,7 @@ def upgrade_version(cmd, update_all=None, yes=None):  # pylint: disable=too-many
             if not confirmation:
                 telemetry.set_success("Upgrade stopped by user")
                 return
-        installer = os.getenv(_ENV_AZ_INSTALLER)
+
         if installer == 'DEB':
             from azure.cli.core.util import in_cloud_console
             if in_cloud_console():
